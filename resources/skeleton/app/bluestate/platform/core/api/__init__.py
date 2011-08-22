@@ -1,0 +1,4 @@
+
+
+class BlueStateCoreAPI(object):
+	pass
