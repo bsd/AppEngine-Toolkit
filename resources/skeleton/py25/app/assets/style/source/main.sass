@@ -1,0 +1,59 @@
+@import "blueprint/reset"
+
+@import partials/base
+@import partials/animations
+
+@import compass/utilities/general/float
+
+@import "blueprint"
+@import "blueprint/ie"
+@import "blueprint/form"
+@import "blueprint/liquid"
+@import "blueprint/colors"
+@import "blueprint/buttons"
+@import "blueprint/fancy-type"
+@import "blueprint/grid"
+@import "blueprint/interaction"
+@import "blueprint/link-icons"
+@import "blueprint/print"
+@import "blueprint/typography"
+@import "blueprint/typography"
+@import "compass/css3/images"
+
+p, h1, h2, h3
+	font-family: 'Cabin', sans-serif
+
+h1
+	font-weight:  600
+	font-size: 36px
+
+h2
+	font-weight:  normal
+	
+// Default AppTools styles
+#container
+	position: absolute
+	top: 0
+	bottom: 0
+	overflow: hidden
+	height: 100%
+	width: 100%
+	@include background(linear-gradient(top, #214E81, #2B78AA))
+	
+#main
+	margin: 10%
+	padding: 45px
+	background: white
+	border-radius: 40px
+	position: absolute
+	top: 0
+	bottom: 0
+	left: 0
+	right: 0
+	border: 5px solid #222
+	
+.bsddarkblue
+	color: #41B6E9
+	
+.bsdlightblue
+	color: #275F92

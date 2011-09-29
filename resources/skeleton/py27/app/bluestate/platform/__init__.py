@@ -1,0 +1,4 @@
+
+
+class BSDException(Exception):
+	pass

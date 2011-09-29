@@ -1,0 +1,197 @@
+application: bsdapptools
+version: py25-alpha
+runtime: python
+api_version: 1
+
+default_expiration: "1m"
+
+
+#### ===== Files to Skip
+skip_files:
+- ^(.*/)?app\.yaml
+- ^(.*/)?app\.yml
+- ^(.*/)?index\.yaml
+- ^(.*/)?index\.yml
+- ^(.*/)?#.*#
+- ^(.*/)?.*~
+- ^(.*/)?.*\.py[co]
+- ^(.*/)?.*/RCS/.*
+- ^(.*/)?\..*
+- ^(.*/)?tests$
+
+
+#### ===== Force precompilation
+derived_file_type:
+- python_precompiled
+
+
+#### ===== GAE SDK Builtins
+builtins:
+- appstats: on
+- deferred: on
+- remote_api: on
+- admin_redirect: on
+- datastore_admin: on
+
+
+#### ===== Inbound Services
+inbound_services:
+- mail
+- warmup
+- xmpp_message
+- xmpp_presence
+- xmpp_subscribe
+- channel_presence
+
+
+#### ===== Low-Level Error Handlers (must be static)
+error_handlers:
+- file: templates/error_handlers/default_error.html
+
+- error_code: over_quota
+  file: templates/error_handlers/over_quota.html
+
+- error_code: dos_api_denial
+  file: templates/error_handlers/dos_api_denial.html
+
+- error_code: timeout
+  file: templates/error_handlers/timeout.html
+
+
+#### ===== Custom Admin Pages
+admin_console:
+  pages:
+  - name: Developer's Console
+    url: /_bsd/dev
+  - name: Management Console
+    url: /_bsd/manage
+  - name: Platform Console
+    url: /_bsd/console
+  - name: Map/Reduce
+    url: /_bsd/mapreduce/
+  - name: Pipelines
+    url: /_bsd/pipeline/status
+  - name: AppStats
+    url: /_bsd/appstats
+
+
+#### ===== Request handler mappings
+handlers:
+
+### -- Static Handlers
+
+# App Icons
+- url: /favicon\.ico
+  static_files: static/identity/favicon.ico
+  upload: static/identity/favicon.ico
+  mime_type: image/vnd.microsoft.icon
+
+- url: /apple-touch-icon\.png
+  mime_type: image/png
+  static_files: static/identity/apple-touch-icon.png
+  upload: static/identity/apple-touch-icon.png
+
+# Standard static files
+- url: /(robots\.txt|humans\.txt|crossdomain\.xml)
+  static_files: static/\1
+  upload: static/(.*)
+
+# HTML5 Appcaching
+- url: /(.*\.(appcache|manifest))
+  mime_type: text/cache-manifest
+  static_files: static/appcache/\1
+  upload: static/(.*\.(appcache|manifest))
+  expiration: "0m"
+
+# Chrome Extension & App Descriptors
+- url: /(.*\.crx)
+  mime_type: application/x-chrome-extension
+  static_files: static/ext/\1
+  upload: static/ext/(.*\.crx)
+
+- url: /static
+  static_dir: static
+
+
+### -- Asset Handlers
+
+# Images (Static)
+- url: /assets/img/static
+  static_dir: assets/img/static
+
+# Images (Dynamic)
+- url: /assets/img/.*
+  script: assets/img/retrieve.py
+
+# Style (Static Only)
+- url: /assets/style
+  static_dir: assets/style
+  mime_type: text/css
+
+# Scripts (Static Only)
+- url: /assets/js/static
+  static_dir: assets/js/static
+  mime_type: text/javascript
+
+# Generic (Static)
+- url: /assets/ext/static
+  static_dir: assets/ext/static
+
+# Generic (Dynamic)
+- url: /assets/ext/.*
+  script: assets/ext/static/retrieve.py
+
+
+### -- Library/system mappings
+
+# Warmup Handler
+- url: /_ah/warmup.*
+  script: warmup.py
+  login: admin
+  auth_fail_action: unauthorized
+
+# Deferred Queue
+- url: /_ah/queue/deferred
+  script: main.py
+  login: admin
+
+# Map/Reduce
+- url: /_bsd/mapreduce.*
+  script: $PYTHON_LIB/google/appengine/ext/mapreduce/main.py
+  login: admin
+  auth_fail_action: unauthorized
+
+# Pipelines
+- url: /_bsd/pipeline(/.*)?
+  script: pipeline/handlers.py
+  login: admin
+  auth_fail_action: unauthorized
+
+# AppTrace: memory profiling
+- url: /_bsd/performance/apptrace.*
+  script: lib/dist/apptrace/overview.py
+  login: admin
+  auth_fail_action: unauthorized
+
+# AppStats: RPC profiling
+- url: /_bsd/performance/appstats.*
+  script: $PYTHON_LIB/google/appengine/ext/appstats/ui.py
+  login: admin
+  auth_fail_action: unauthorized
+
+# SDK Low-Level Admin Console
+- url: /_bsd/console/.*
+  script: $PYTHON_LIB/google/appengine/ext/admin
+  login: admin
+  secure: always
+  auth_fail_action: redirect
+  
+  
+### -- Site users to Tipfy, API users to Webapp2. Go go go! :)
+- url: /_api/rpc.*
+  script: services.py
+  login: optional
+  auth_fail_action: unauthorized
+
+- url: /.*
+  script: main.py

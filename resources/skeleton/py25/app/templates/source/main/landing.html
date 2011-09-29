@@ -1,0 +1,15 @@
+{% extends "core/__base_web.html" %}
+
+{% block main %}
+	<h1>Welcome to the <span class='bsddarkblue'>Blue</span><span class='bsdlightblue'>State</span><span class='bsddarkblue'>Digital</span> App Tools!</h1>
+	<hr />
+	<br />
+	<p>
+		<b>System Version: </b>{{ version }}<br />
+		<b>AppTools Version: </b>{{ sysconfig.version.major }}.{{ sysconfig.version.minor }}.{{ sysconfig.version.micro }}  {{ sysconfig.version.build }}-{{ sysconfig.version.release }}<br />
+		<b>App ID: </b>{{ appid }}<br />
+		<b>Instance ID: </b>{{ instanceid }}<br />
+		
+		<br />
+	</p>
+{% endblock %}
